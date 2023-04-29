@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  mysqldb:
+    platform: linux/x86_64
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: "playablefactory"
+      MYSQL_USER: "homestead"
+      MYSQL_PASSWORD: "secret"
+      MYSQL_ROOT_PASSWORD: "secret"
+    ports:
+      - "3306:3306"
+    expose:
+      - "3306"
+    volumes:
+      - my-db:/var/lib/mysql
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    environment:
+      - MYSQL_HOST=mysqldb
+      - MYSQL_USER=homestead
+      - MYSQL_PASSWORD=secret
+      - MYSQL_NAME=playablefactory
+    volumes:
+      - .:/src
+      - /node_modules
+    ports:
+      - "8080:8080"
+  frontend:
+    build:
+      context: ./playable
+      dockerfile: Dockerfile
+    volumes:
+      - .:/playable
+      - /playablenode_modules
+    ports:
+      - "3000:3000"
+volumes:
+  my-db:
+  api:
+  frontend:
